@@ -1,6 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
+const { calculatorRouter, automodelRouter } = require("./routes/api");
 
 const app = express();
 
@@ -8,7 +9,8 @@ app.use(logger("dev"));
 app.use(cors());
 app.use(express.json());
 
-// app.use("/api/authors", authorsRouter);
+app.use("/api/calculator", calculatorRouter);
+app.use("/api/automodel", automodelRouter);
 
 app.use((req, res, next) => {
   res.status(404).json({ message: "Not found path" });
