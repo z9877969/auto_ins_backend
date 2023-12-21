@@ -9,7 +9,6 @@ const getUserApi = async () => {
     });
     return data;
   } catch (error) {
-    // console.dir(error);
     throw createAxiosError(error);
   }
 };
