@@ -4,7 +4,6 @@ const { ROOT_USER_EMAIL } = require("../../envConfigs");
 
 const getUserApi = async () => {
   try {
-    console.log(apiInstance);
     const { data } = await apiInstance.get("/user/getByEmail", {
       params: { email: ROOT_USER_EMAIL },
     });
