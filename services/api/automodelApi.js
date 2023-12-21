@@ -3,7 +3,7 @@ const { apiInstance } = require("./apiInstance");
 
 const getAutoMakersApi = async () => {
   try {
-    const { data } = await instance.get("/auto_model/makers");
+    const { data } = await apiInstance.get("/auto_model/makers");
     return data;
   } catch (error) {
     throw createAxiosError(error);
@@ -12,7 +12,7 @@ const getAutoMakersApi = async () => {
 
 const getAutoModelByMakerApi = async (query) => {
   try {
-    const { data } = await instance.get("/auto_model/models", {
+    const { data } = await apiInstance.get("/auto_model/models", {
       params: {
         query,
       },
@@ -25,7 +25,7 @@ const getAutoModelByMakerApi = async (query) => {
 
 const getAutoByNumberApi = async (query) => {
   try {
-    const { data } = await instance.get("/auto/mtibu/number", {
+    const { data } = await apiInstance.get("/auto/mtibu/number", {
       params: {
         query,
       },
@@ -38,7 +38,7 @@ const getAutoByNumberApi = async (query) => {
 
 const getAutoByMakerAndModelApi = async (query) => {
   try {
-    const { data } = await instance.get("/auto_model/maker_and_model", {
+    const { data } = await apiInstance.get("/auto_model/maker_and_model", {
       params: {
         query,
       },

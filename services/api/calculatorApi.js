@@ -1,13 +1,16 @@
 const { apiInstance } = require("./apiInstance");
 const { createAxiosError } = require("../../helpers");
+const { ROOT_USER_EMAIL } = require("../../envConfigs");
 
 const getUserApi = async () => {
   try {
+    console.log(apiInstance);
     const { data } = await apiInstance.get("/user/getByEmail", {
       params: { email: ROOT_USER_EMAIL },
     });
     return data;
   } catch (error) {
+    // console.dir(error);
     throw createAxiosError(error);
   }
 };

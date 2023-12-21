@@ -1,28 +1,28 @@
 const { createRouter } = require("../../helpers");
 const { calculatorControllers: c } = require("../../controllers");
 
-const outsideApiRouter = createRouter({
+const calculatorRouter = createRouter({
   options: [
     {
-      path: "/user/getByEmail",
+      route: "/user/getByEmail",
       method: "get",
       middlewares: null,
       controller: c.loginUser,
     },
     {
-      path: "/tariff/choose/policy",
+      route: "/tariff/choose/policy",
       method: "get",
       middlewares: null,
       controller: c.getOsagoByParams,
     },
     {
-      path: "/tariff/choose/policy/statenumber",
+      route: "/tariff/choose/policy/statenumber",
       method: "get",
       middlewares: null,
       controller: c.getOsagoByDn,
     },
     {
-      path: "/tariff/choose/policy/statenumber",
+      route: "/tariff/choose/vcl",
       method: "get",
       middlewares: null,
       controller: c.chooseVclTariffDGO,
@@ -31,6 +31,6 @@ const outsideApiRouter = createRouter({
   defaultMiddlewares: [],
 });
 
-outsideApiRouter.setRouter();
+calculatorRouter.setRouter();
 
-module.exports = outsideApiRouter.router;
+module.exports = calculatorRouter.router;
