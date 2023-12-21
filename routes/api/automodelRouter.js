@@ -10,10 +10,22 @@ const referencesRouter = createRouter({
       controller: c.getAutoMakers,
     },
     {
-      path: "/auto/mtibu/number",
+      path: "/auto_model/models",
       method: "get",
       middlewares: null,
       controller: c.getAutoModelByMaker,
+    },
+    {
+      path: "/auto/mtibu/number",
+      method: "get",
+      middlewares: null,
+      controller: c.getAutoByNumber,
+    },
+    {
+      path: "/auto_model/maker_and_model",
+      method: "get",
+      middlewares: null,
+      controller: c.getAutoByMakerAndModel,
     },
   ],
   defaultMiddlewares: [],
