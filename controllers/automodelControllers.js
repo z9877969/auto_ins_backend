@@ -11,7 +11,7 @@ const getAutoMakers = async (req, res, next) => {
 
 const getAutoModelByMaker = async (req, res, next) => {
   try {
-    const data = await api.getAutoModelByMakerApi(res.query);
+    const data = await api.getAutoModelByMakerApi(req.query);
     res.json(data);
   } catch (error) {
     next(error);
@@ -20,7 +20,7 @@ const getAutoModelByMaker = async (req, res, next) => {
 
 const getAutoByNumber = async (req, res, next) => {
   try {
-    const data = await api.getAutoByNumberApi(res.query);
+    const data = await api.getAutoByNumberApi(req.query);
     res.json(data);
   } catch (error) {
     next(error);
@@ -29,7 +29,7 @@ const getAutoByNumber = async (req, res, next) => {
 
 const getAutoByMakerAndModel = async (req, res, next) => {
   try {
-    const data = await api.getAutoByMakerAndModelApi(res.query);
+    const data = await api.getAutoByMakerAndModelApi(req.query);
     res.json(data);
   } catch (error) {
     next(error);

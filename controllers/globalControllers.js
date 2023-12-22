@@ -2,7 +2,7 @@ const { globalApi: api } = require("../services");
 
 const createContract = async (req, res, next) => {
   try {
-    const data = await api.createContractApi(res.body);
+    const data = await api.createContractApi(req.body);
     res.json(data);
   } catch (error) {
     next(error);
@@ -11,7 +11,8 @@ const createContract = async (req, res, next) => {
 
 const getAddress = async (req, res, next) => {
   try {
-    const data = await api.getAddressApi(res.query);
+    console.log("res.query", req.query);
+    const data = await api.getAddressApi(req.query);
     res.json(data);
   } catch (error) {
     next(error);
