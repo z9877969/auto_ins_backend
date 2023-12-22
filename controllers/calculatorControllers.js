@@ -38,15 +38,10 @@ const getOsagoByDn = async (req, res, next) => {
 
 const chooseVclTariffDGO = async (req, res, next) => {
   // categories = category1+category2+category3
-  const { dateFrom, dateTo, ...query } = req.query;
+  // const { dateFrom, dateTo, ...query } = req.query;
   //   const parsedCategories = categories.trim().split("+").map(el => el.trim())
   try {
-    const data = await chooseVclTariffDGOApi({
-      dateFrom,
-      dateTo,
-      //   categories,
-      ...query,
-    });
+    const data = await chooseVclTariffDGOApi(req.body);
     res.json(data);
   } catch (error) {
     next(error);

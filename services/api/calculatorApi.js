@@ -59,10 +59,10 @@ const getOsagoByDnApi = async ({
   }
 };
 
-const chooseVclTariffDGOApi = async ({ dateFrom, dateTo, ...query }) => {
+const chooseVclTariffDGOApi = async ({ dateFrom, dateTo, ...body }) => {
   try {
     const { data } = await instance.post("/tariff/choose/vcl", {
-      ...query,
+      ...body,
       dateFrom,
       dateTo,
     });
