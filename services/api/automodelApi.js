@@ -10,12 +10,10 @@ const getAutoMakersApi = async () => {
   }
 };
 
-const getAutoModelByMakerApi = async (query) => {
+const getAutoModelByMakerApi = async (params) => {
   try {
     const { data } = await apiInstance.get("/auto_model/models", {
-      params: {
-        query,
-      },
+      params,
     });
     return data;
   } catch (error) {
@@ -23,12 +21,10 @@ const getAutoModelByMakerApi = async (query) => {
   }
 };
 
-const getAutoByNumberApi = async (query) => {
+const getAutoByNumberApi = async (params) => {
   try {
     const { data } = await apiInstance.get("/auto/mtibu/number", {
-      params: {
-        query,
-      },
+      params,
     });
     return data;
   } catch (error) {
@@ -36,12 +32,10 @@ const getAutoByNumberApi = async (query) => {
   }
 };
 
-const getAutoByMakerAndModelApi = async (query) => {
+const getAutoByMakerAndModelApi = async (params) => {
   try {
     const { data } = await apiInstance.get("/auto_model/maker_and_model", {
-      params: {
-        query,
-      },
+      params,
     });
     return data;
   } catch (error) {

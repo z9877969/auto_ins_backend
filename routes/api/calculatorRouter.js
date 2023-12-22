@@ -23,7 +23,7 @@ const calculatorRouter = createRouter({
     },
     {
       route: "/tariff/choose/vcl",
-      method: "get",
+      method: "post",
       middlewares: null,
       controller: c.chooseVclTariffDGO,
     },

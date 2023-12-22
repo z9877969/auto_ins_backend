@@ -44,7 +44,7 @@ const getOsagoByDnApi = async ({
   taxi = false,
 }) => {
   try {
-    const { data } = await instance.get("/tariff/choose/policy/statenumber", {
+    const { data } = await apiInstance.get("/tariff/choose/policy/statenumber", {
       params: {
         customerCategory,
         stateNumber,
@@ -61,7 +61,7 @@ const getOsagoByDnApi = async ({
 
 const chooseVclTariffDGOApi = async ({ dateFrom, dateTo, ...body }) => {
   try {
-    const { data } = await instance.post("/tariff/choose/vcl", {
+    const { data } = await apiInstance.post("/tariff/choose/vcl", {
       ...body,
       dateFrom,
       dateTo,
