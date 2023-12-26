@@ -30,7 +30,7 @@ const getOsagoByDn = async (req, res, next) => {
       registrationType,
       taxi,
     });
-    return data;
+    res.json(data);
   } catch (error) {
     next(error);
   }
