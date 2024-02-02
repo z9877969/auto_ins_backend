@@ -54,7 +54,7 @@ const updateOrderToEmmitAndRedirect = async (req, res, next) => {
       state: orderCheck.state.EMITTED,
     });
 
-    if (data.id !== contractId) {
+    if (data.id.toString() !== contractId.toString()) {
       throw createError(400, "Поліс не укладено");
     }
 
