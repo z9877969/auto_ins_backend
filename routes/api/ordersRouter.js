@@ -23,7 +23,7 @@ const paymentRouter = createRouter({
     },
     {
       route: "/:contractId/emmit",
-      method: "get",
+      method: "post",
       middlewares: null,
       controller: c.updateOrderToEmmitAndRedirect,
     },
