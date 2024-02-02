@@ -1,6 +1,7 @@
 const { ordersApi: api } = require("../services");
 const { orderCheck } = require("../constants");
 const { createError } = require("../helpers");
+const { EMMITED_ORDER_REDIRECT_URL } = require("../envConfigs");
 
 const getOrderPassword = async (req, res, next) => {
   const { contractId } = req.params;
@@ -30,7 +31,7 @@ const checkOrderPassword = async (req, res, next) => {
   }
 };
 
-const updateOrderStatus = async (req, res, next) => {
+const updateOrderToRequestStatus = async (req, res, next) => {
   const { contractId } = req.params;
 
   try {
@@ -38,6 +39,16 @@ const updateOrderStatus = async (req, res, next) => {
       contractId,
       state: orderCheck.state.REQUEST,
     });
+    res.json({ contractId });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateOrderToEmmitAndRedirect = async (req, res, next) => {
+  const { contractId } = req.params;
+
+  try {
     const data = await api.updateOrderStatusApi({
       contractId,
       state: orderCheck.state.EMITTED,
@@ -46,7 +57,8 @@ const updateOrderStatus = async (req, res, next) => {
     if (data.id !== contractId) {
       throw createError(400, "Поліс не укладено");
     }
-    res.json(data);
+
+    res.redirect(EMMITED_ORDER_REDIRECT_URL);
   } catch (error) {
     next(error);
   }
@@ -55,5 +67,6 @@ const updateOrderStatus = async (req, res, next) => {
 module.exports = {
   getOrderPassword,
   checkOrderPassword,
-  updateOrderStatus,
+  updateOrderToRequestStatus,
+  updateOrderToEmmitAndRedirect,
 };

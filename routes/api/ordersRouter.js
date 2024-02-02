@@ -16,10 +16,16 @@ const paymentRouter = createRouter({
       controller: c.checkOrderPassword,
     },
     {
-      route: "/:contractId/state",
+      route: "/:contractId/request",
       method: "post",
       middlewares: null,
-      controller: c.updateOrderStatus,
+      controller: c.updateOrderToRequestStatus,
+    },
+    {
+      route: "/:contractId/emmit",
+      method: "post",
+      middlewares: null,
+      controller: c.updateOrderToEmmitAndRedirect,
     },
   ],
   defaultMiddlewares: [],
