@@ -15,7 +15,7 @@ const getOrderPassword = async (req, res, next) => {
 
 const checkOrderPassword = async (req, res, next) => {
   const { contractId } = req.params;
-  const { password } = req.query;
+  const { password, vcl } = req.query;
 
   try {
     const data = await api.checkOrderPasswordApi({
@@ -24,6 +24,9 @@ const checkOrderPassword = async (req, res, next) => {
     });
     if (data !== orderCheck.status.OK) {
       throw createError(400, error.message);
+    }
+    if (vcl) {
+      await api.checkCustomOrderPasswordApi(vcl);
     }
     res.json(data);
   } catch (error) {
@@ -74,9 +77,7 @@ const updateOrderToEmmitAndRedirect = async (req, res, next) => {
         contractId: vclId,
         state: orderCheck.state.EMITTED,
       });
-      if (
-        data.id.toString() !== vclId.toString()
-      ) {
+      if (data.id.toString() !== vclId.toString()) {
         throw createError(400, 'Поліс ДЦВ не укладено');
       }
     }
