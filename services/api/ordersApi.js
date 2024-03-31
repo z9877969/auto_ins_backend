@@ -36,14 +36,25 @@ const checkOrderPasswordApi = async ({ contractId, customer }) => {
 const checkCustomOrderPasswordApi = async (vclId) => {
   try {
     // ?=&customer=111111&customerOtpDate=2019-06-18T13%3A06%3A16.000%2B0000
-    console.log(`/contract/${vclId}/sellerOtp`, 'START');
-    const {} = await apiInstance.get(`/contract/${vclId}/sellerOtp`, {
-      params: {
-        customer: '111111',
-        customerOtpDate: encodeDate(), // 2024-03-31T18%3A53%3A59.250Z
-      },
-    });
-    console.log(`/contract/${vclId}/sellerOtp`, data, '\nEND');
+    console.log(
+      `/contract/${vclId}/sellerOtp?=&customer=111111&customerOtpDate=${encodeDate()}`,
+      'START'
+    );
+    const { data } = await apiInstance.get(
+      `/contract/${vclId}/sellerOtp?=&customer=111111&customerOtpDate=${encodeDate()}`,
+      {
+        params: {
+          customer: '111111',
+          customerOtpDate: encodeDate(), // 2024-03-31T18%3A53%3A59.250Z
+        },
+      }
+    );
+    console.log(
+      `/contract/${vclId}/sellerOtp?=&customer=111111&customerOtpDate=${encodeDate()}`,
+      data,
+      '\nEND'
+    );
+    return data;
   } catch (error) {
     throw createAxiosError(error);
   }

@@ -26,7 +26,10 @@ const checkOrderPassword = async (req, res, next) => {
       throw createError(400, error.message);
     }
     if (vcl) {
-      await api.checkCustomOrderPasswordApi(vcl);
+      const data = await api.checkCustomOrderPasswordApi(vcl);
+      if (data !== orderCheck.status.OK) {
+        throw createError(400, error.message);
+      }
     }
     res.json(data);
   } catch (error) {
