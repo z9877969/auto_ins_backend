@@ -54,7 +54,7 @@ const updateOrderToRequestStatus = async (req, res, next) => {
 
 const updateOrderToEmmitAndRedirect = async (req, res, next) => {
   const { contractId } = req.params;
-  const { epolice: epoliceId, vcl: vclId } = req.query;
+  const { epolicy: epoliceId, vcl: vclId } = req.query;
 
   try {
     const data = await api.updateOrderStatusApi({
