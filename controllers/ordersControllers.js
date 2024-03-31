@@ -71,7 +71,7 @@ const updateOrderToEmmitAndRedirect = async (req, res, next) => {
 
     if (vclId) {
       const data = await api.updateOrderStatusApi({
-        contractId: contractId || epoliceId,
+        contractId: vclId,
         state: orderCheck.state.EMITTED,
       });
       if (
