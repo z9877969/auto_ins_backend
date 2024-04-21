@@ -15,7 +15,7 @@ const getOrderPassword = async (req, res, next) => {
 
 const checkOrderPassword = async (req, res, next) => {
   const { contractId } = req.params;
-  const { password, vcl } = req.query;
+  const { password } = req.query;
 
   try {
     const data = await api.checkOrderPasswordApi({
@@ -23,13 +23,7 @@ const checkOrderPassword = async (req, res, next) => {
       customer: password,
     });
     if (data !== orderCheck.status.OK) {
-      throw createError(400, error.message);
-    }
-    if (vcl) {
-      const data = await api.checkCustomOrderPasswordApi(vcl);
-      if (data !== orderCheck.status.OK) {
-        throw createError(400, error.message);
-      }
+      throw createError(400, 'Epolicy order check status is failed');
     }
     res.json(data);
   } catch (error) {
@@ -62,11 +56,27 @@ const updateOrderToEmmitAndRedirect = async (req, res, next) => {
   const { contractId } = req.params;
   const { epolicy: epoliceId, vcl: vclId } = req.query;
 
+  console.log('updateOrderToEmmitAndRedirect -Start');
+
   try {
+    if (vclId) {
+      console.log('update to SIGNED VCL order -Start');
+      const data = await api.updateOrderStatusApi({
+        contractId: vclId,
+        state: orderCheck.state.SIGNED,
+      });
+      console.log('vcl response data :>> ', data);
+      if (data.id.toString() !== vclId.toString()) {
+        throw createError(400, 'Поліс ДЦВ не укладено');
+      }
+      console.log('update to SIGNED VCL order -Start');
+    }
+
     const data = await api.updateOrderStatusApi({
       contractId: contractId || epoliceId,
       state: orderCheck.state.EMITTED,
     });
+    console.log('epolicy response data :>> ', data);
 
     if (
       data.id.toString() !== contractId.toString() &&
@@ -74,19 +84,11 @@ const updateOrderToEmmitAndRedirect = async (req, res, next) => {
     ) {
       throw createError(400, 'Поліс еОСЦПВ не укладено');
     }
-
-    if (vclId) {
-      const data = await api.updateOrderStatusApi({
-        contractId: vclId,
-        state: orderCheck.state.EMITTED,
-      });
-      if (data.id.toString() !== vclId.toString()) {
-        throw createError(400, 'Поліс ДЦВ не укладено');
-      }
-    }
-
+    console.log('epolicy response data -End ');
+    console.log('updateOrderToEmmitAndRedirect -End');
     res.redirect(EMMITED_ORDER_REDIRECT_URL);
   } catch (error) {
+    console.log('error :>> ', error.message);
     next(error);
   }
 };

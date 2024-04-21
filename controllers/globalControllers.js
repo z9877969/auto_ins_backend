@@ -11,7 +11,6 @@ const createContract = async (req, res, next) => {
 
 const getAddress = async (req, res, next) => {
   try {
-    console.log("res.query", req.query);
     const data = await api.getAddressApi(req.query);
     res.json(data);
   } catch (error) {
