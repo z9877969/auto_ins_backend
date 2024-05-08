@@ -1,9 +1,9 @@
-const { createAxiosError } = require("../../helpers");
-const { apiInstance } = require("./apiInstance");
+const { createAxiosError } = require('../../helpers');
+const { apiInstance } = require('./apiInstance');
 
 const createContractApi = async (body) => {
   try {
-    const { data } = await apiInstance.post("/contract/save", {
+    const { data } = await apiInstance.post('/contract/save', {
       ...body,
     });
     return data;
@@ -14,11 +14,11 @@ const createContractApi = async (body) => {
 
 const getAddressApi = async ({
   cdbMtibu = false,
-  country = "UA",
+  country = 'UA',
   ...query
 }) => {
   try {
-    const { data } = await apiInstance.get("/place", {
+    const { data } = await apiInstance.get('/place', {
       params: {
         ...query,
         cdbMtibu,

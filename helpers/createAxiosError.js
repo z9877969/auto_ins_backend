@@ -4,6 +4,7 @@ module.exports = (error) => {
   if (response?.status) {
     error.status = response.status;
     error.message = error.response.data.message;
+    error.errorResponse = { ...error.response.data };
   } else if (request?.status) {
     error.status = request.status;
   }
