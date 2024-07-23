@@ -29,3 +29,7 @@ const addLog = async (error = { message: 'errorMEssage' }) => {
     console.log(error);
   }
 };
+
+module.exports = {
+  addLog,
+};

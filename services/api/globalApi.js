@@ -1,4 +1,4 @@
-const { createAxiosError } = require('../../helpers');
+const { createAxiosError, addLog } = require('../../helpers');
 const { apiInstance } = require('./apiInstance');
 
 const createContractApi = async (body) => {
