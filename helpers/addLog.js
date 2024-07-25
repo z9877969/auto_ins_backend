@@ -5,7 +5,7 @@ const pathToLogsDir = path.resolve('logs');
 
 const addLog = async (error = { message: 'errorMEssage' }) => {
   try {
-    const dateStr = new Date().toLocaleString().split(',')[0];
+    const dateStr = new Date().toISOString().split('T')[0];
 
     const dirInside = await fs.readdir(pathToLogsDir);
     const curDateErrorsFile = dateStr + '.json';
