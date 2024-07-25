@@ -30,6 +30,4 @@ const addLog = async (error = { message: 'errorMEssage' }) => {
   }
 };
 
-module.exports = {
-  addLog,
-};
+module.exports = addLog;

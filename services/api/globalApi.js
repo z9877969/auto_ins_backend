@@ -8,9 +8,7 @@ const createContractApi = async (body) => {
     });
     return data;
   } catch (error) {
-    const axiosError = createAxiosError(error);
-    await addLog(axiosError);
-    throw axiosError;
+    throw createAxiosError(error);
   }
 };
 

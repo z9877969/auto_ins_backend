@@ -7,6 +7,7 @@ const {
   globalRouter,
   ordersRouter,
 } = require('./routes/api');
+const { addLog } = require('./helpers');
 
 const app = express();
 
@@ -23,12 +24,15 @@ app.use((_, res, __) => {
   res.status(404).json({ message: 'Not found path' });
 });
 
-app.use((err, _, res, __) => {
+app.use(async (err, _, res, __) => {
   const {
     status = 500,
     message = 'Internal server error',
     errorResponse = null,
   } = err;
+  if (errorResponse) {
+    await addLog(errorResponse);
+  }
   res.status(status).json({ message, errorResponse });
 });
 
