@@ -1,7 +1,15 @@
+const h = require('../helpers');
+const { logs: s } = require('../services');
+
 const addLog = async (req, res, next) => {
-    try {
-        
-    } catch (error) {
-        next(error)
-    }
-}
+  try {
+    s.addLog({ ...req.body, time: h.convertTime() });
+    res.status(204).json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  addLog,
+};
