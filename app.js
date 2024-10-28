@@ -13,15 +13,17 @@ const { logsServices } = require('./services');
 const app = express();
 
 app.use(logger('dev'));
-app.use(
-  cors({
+app.use(cors());
+/* 
+cors options
+  {
     origin: [
       'http://localhost:5173',
       'https://auto-ins.com.ua/',
       'https://auto-ins.netlify.app',
     ],
-  })
-);
+  }
+*/
 app.use(express.json());
 
 app.use('/api/calculator', calculatorRouter);
