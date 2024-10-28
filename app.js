@@ -8,7 +8,7 @@ const {
   ordersRouter,
   logsRouter,
 } = require('./routes/api');
-const { logs } = require('./services');
+const { logsServices } = require('./services');
 
 const app = express();
 
@@ -41,7 +41,7 @@ app.use(async (err, _, res, __) => {
     errorResponse = null,
   } = err;
   if (errorResponse) {
-    await logs.addLog(errorResponse);
+    await logsServices.addLog(errorResponse);
   }
   res.status(status).json({ message, errorResponse });
 });

@@ -1,11 +1,13 @@
 const path = require('path');
 const fs = require('fs/promises');
+const { convertTime } = require('../helpers');
 
 const pathToLogsDir = path.resolve('logs');
 
 const addLog = async (error = { message: 'errorMEssage' }) => {
   try {
-    const dateStr = new Date().toISOString().split('T')[0];
+    // const dateStr = new Date().toISOString().split('T')[0];
+    const dateStr = convertTime().split(',')[0].split('.').reverse().join('-');
 
     const dirInside = await fs.readdir(pathToLogsDir);
     const curDateErrorsFile = dateStr + '.json';

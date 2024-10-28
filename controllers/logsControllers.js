@@ -1,5 +1,5 @@
 const h = require('../helpers');
-const { logs: s } = require('../services');
+const { logsServices: s } = require('../services');
 
 const addLog = async (req, res, next) => {
   try {
