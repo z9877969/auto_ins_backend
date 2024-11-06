@@ -36,7 +36,7 @@ app.use((_, res, __) => {
   res.status(404).json({ message: 'Not found path' });
 });
 
-app.use(async (err, _, res, __) => {
+app.use(async (err, req, res, __) => {
   const {
     status = 500,
     message = 'Internal server error',

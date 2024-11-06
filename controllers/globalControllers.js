@@ -1,4 +1,7 @@
-const { globalApi: api } = require("../services");
+const { transformReqToCurl } = require('../helpers/transformReqToCurl');
+const { globalApi: api,  } = require('../services');
+const  {apiInstance} = require('../services/api/apiInstance');
+
 
 const createContract = async (req, res, next) => {
   try {
@@ -14,6 +17,9 @@ const getAddress = async (req, res, next) => {
     const data = await api.getAddressApi(req.query);
     res.json(data);
   } catch (error) {
+    const curl = transformReqToCurl(req);
+    console.log('api :>> ', apiInstance.defaults);
+    console.log('curl :>> ', curl);
     next(error);
   }
 };
