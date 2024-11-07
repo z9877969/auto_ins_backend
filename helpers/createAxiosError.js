@@ -4,7 +4,13 @@ module.exports = (error) => {
   if (response?.status) {
     error.status = response.status;
     error.message = error.response.data.message;
-    error.errorResponse = { ...error.response.data };
+    error.errorResponse =
+      typeof error.response.data === 'string' &&
+      error.response.data.startsWith('<')
+        ? { markup: error.response.data }
+        : { ...error.response.data };
+    error.errorResponse.curl = error.response.config?.curlCommand ?? null;
+    error.errorResponse.data = error.response.config?.data ?? null;
   } else if (request?.status) {
     error.status = request.status;
   }
