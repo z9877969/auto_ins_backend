@@ -1,4 +1,4 @@
-module.exports = (error, options) => {
+module.exports = (error) => {
   // error.response keys -> [ 'status', 'statusText', 'headers', 'config', 'request', 'data' ]
   const { request, response } = error;
   if (response?.status) {

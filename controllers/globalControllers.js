@@ -1,7 +1,4 @@
-const { transformReqToCurl } = require('../helpers/transformReqToCurl');
 const { globalApi: api,  } = require('../services');
-const  {apiInstance} = require('../services/api/apiInstance');
-
 
 const createContract = async (req, res, next) => {
   try {
