@@ -1,4 +1,4 @@
-const { globalApi: api,  } = require('../services');
+const { globalApi: api } = require('../services');
 
 const createContract = async (req, res, next) => {
   try {
