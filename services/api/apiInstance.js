@@ -13,6 +13,7 @@ const apiInstance = axios.create({
     'x-auth-token': X_AUTH_TOKEN_HEADER,
     'Content-Type': 'application/json',
   },
+  curlirize: false
 });
 
 (async () => {

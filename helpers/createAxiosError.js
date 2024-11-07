@@ -10,6 +10,7 @@ module.exports = (error) => {
         ? { markup: error.response.data }
         : { ...error.response.data };
     error.errorResponse.curl = error.response.config?.curlCommand ?? null;
+    error.errorResponse.data = error.response.config?.data ?? null;
   } else if (request?.status) {
     error.status = request.status;
   }
