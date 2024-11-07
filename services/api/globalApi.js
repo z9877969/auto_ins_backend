@@ -24,6 +24,7 @@ const getAddressApi = async ({
         cdbMtibu,
         country,
       },
+      curlirize: false,
     });
     return data;
   } catch (error) {

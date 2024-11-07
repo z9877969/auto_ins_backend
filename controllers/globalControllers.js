@@ -17,9 +17,6 @@ const getAddress = async (req, res, next) => {
     const data = await api.getAddressApi(req.query);
     res.json(data);
   } catch (error) {
-    const curl = transformReqToCurl(req);
-    console.log('api :>> ', apiInstance.defaults);
-    console.log('curl :>> ', curl);
     next(error);
   }
 };
