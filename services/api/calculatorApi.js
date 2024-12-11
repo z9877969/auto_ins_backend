@@ -1,10 +1,10 @@
-const { apiInstance } = require("./apiInstance");
-const { createAxiosError } = require("../../helpers");
-const { ROOT_USER_EMAIL } = require("../../envConfigs");
+const { apiInstance } = require('./apiInstance');
+const { createAxiosError } = require('../../helpers');
+const { ROOT_USER_EMAIL } = require('../../envConfigs');
 
 const getUserApi = async () => {
   try {
-    const { data } = await apiInstance.get("/user/getByEmail", {
+    const { data } = await apiInstance.get('/user/getByEmail', {
       params: { email: ROOT_USER_EMAIL },
     });
     return data;
@@ -21,7 +21,7 @@ const getOsagoByParamsApi = async ({
   ...query
 }) => {
   try {
-    const { data } = await apiInstance.get("/tariff/choose/policy", {
+    const { data } = await apiInstance.get('/tariff/choose/policy', {
       params: {
         ...query,
         usageMonths,
@@ -40,19 +40,24 @@ const getOsagoByDnApi = async ({
   customerCategory,
   stateNumber,
   dateFrom,
-  registrationType = "PERMANENT_WITHOUT_OTK",
+  registrationType = 'PERMANENT_WITHOUT_OTK',
   taxi = false,
+  ...query
 }) => {
   try {
-    const { data } = await apiInstance.get("/tariff/choose/policy/statenumber", {
-      params: {
-        customerCategory,
-        stateNumber,
-        dateFrom,
-        registrationType,
-        taxi,
-      },
-    });
+    const { data } = await apiInstance.get(
+      '/tariff/choose/policy/statenumber',
+      {
+        params: {
+          customerCategory,
+          stateNumber,
+          dateFrom,
+          registrationType,
+          taxi,
+          ...query,
+        },
+      }
+    );
     return data;
   } catch (error) {
     throw createAxiosError(error);
@@ -61,7 +66,7 @@ const getOsagoByDnApi = async ({
 
 const chooseVclTariffDGOApi = async ({ dateFrom, dateTo, ...body }) => {
   try {
-    const { data } = await apiInstance.post("/tariff/choose/vcl", {
+    const { data } = await apiInstance.post('/tariff/choose/vcl', {
       ...body,
       dateFrom,
       dateTo,

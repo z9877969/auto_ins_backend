@@ -1,4 +1,4 @@
-const { calculatorApi: api } = require("../services");
+const { calculatorApi: api } = require('../services');
 
 const loginUser = async (req, res, next) => {
   try {
@@ -21,14 +21,21 @@ const getOsagoByParams = async (req, res, next) => {
 
 const getOsagoByDn = async (req, res, next) => {
   try {
-    const { customerCategory, stateNumber, dateFrom, registrationType, taxi } =
-      req.query;
+    const {
+      customerCategory,
+      stateNumber,
+      dateFrom,
+      registrationType,
+      taxi,
+      ...query
+    } = req.query;
     const data = await api.getOsagoByDnApi({
       customerCategory,
       stateNumber,
       dateFrom,
       registrationType,
       taxi,
+      ...query,
     });
     res.json(data);
   } catch (error) {
