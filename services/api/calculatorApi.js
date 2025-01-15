@@ -1,11 +1,11 @@
 const { apiInstance } = require('./apiInstance');
 const { createAxiosError } = require('../../helpers');
 const { ROOT_USER_EMAIL } = require('../../envConfigs');
-const {
-  axiosToCurl,
-  addAxiosRequestCurlToLog,
-} = require('../../helpers/transformReqToCurl');
-const { addLog } = require('../../services/logsServices');
+// const {
+//   axiosToCurl,
+//   addAxiosRequestCurlToLog,
+// } = require('../../helpers/transformReqToCurl');
+// const { addLog } = require('../../services/logsServices');
 
 const getUserApi = async () => {
   try {
