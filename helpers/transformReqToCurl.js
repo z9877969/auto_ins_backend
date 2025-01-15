@@ -1,3 +1,5 @@
+const { addLog } = require('../services/logsServices');
+
 const transformReqToCurl = (req) => {
   const method = req.method;
   const url = req.protocol + '://' + req.get('host') + req.originalUrl;
@@ -36,4 +38,12 @@ const axiosToCurl = ({ method, url, headers, data }) => {
   return curl;
 };
 
-module.exports = { transformReqToCurl, axiosToCurl };
+const addAxiosRequestCurlToLog = async (request) => {
+  const { method, hostname, headers, protocol, path } =
+    request._redirectable._options;
+  const url = protocol + '//' + hostname + path;
+  const curl = axiosToCurl({ method, url, headers });
+  await addLog({ curl });
+};
+
+module.exports = { transformReqToCurl, axiosToCurl, addAxiosRequestCurlToLog };

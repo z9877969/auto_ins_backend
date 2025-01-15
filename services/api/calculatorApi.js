@@ -1,6 +1,11 @@
 const { apiInstance } = require('./apiInstance');
 const { createAxiosError } = require('../../helpers');
 const { ROOT_USER_EMAIL } = require('../../envConfigs');
+const {
+  axiosToCurl,
+  addAxiosRequestCurlToLog,
+} = require('../../helpers/transformReqToCurl');
+const { addLog } = require('../../services/logsServices');
 
 const getUserApi = async () => {
   try {
@@ -40,12 +45,12 @@ const getOsagoByDnApi = async ({
   customerCategory,
   stateNumber,
   dateFrom,
-  registrationType = 'PERMANENT_WITHOUT_OTK',
+  registrationType = 'PERMANENT',
   taxi = false,
   ...query
 }) => {
   try {
-    const { data } = await apiInstance.get(
+    const { data, request } = await apiInstance.get(
       '/tariff/choose/policy/statenumber',
       {
         params: {
@@ -58,6 +63,7 @@ const getOsagoByDnApi = async ({
         },
       }
     );
+    // await addAxiosRequestCurlToLog(request);
     return data;
   } catch (error) {
     throw createAxiosError(error);
@@ -66,11 +72,12 @@ const getOsagoByDnApi = async ({
 
 const chooseVclTariffDGOApi = async ({ dateFrom, dateTo, ...body }) => {
   try {
-    const { data } = await apiInstance.post('/tariff/choose/vcl', {
+    const { data, request } = await apiInstance.post('/tariff/choose/vcl', {
       ...body,
       dateFrom,
       dateTo,
     });
+    // await addAxiosRequestCurlToLog(request);
     return data;
   } catch (error) {
     throw createAxiosError(error);
