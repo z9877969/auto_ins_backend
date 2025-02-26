@@ -46,8 +46,86 @@ const updateOrderStatusApi = async ({ contractId, state }) => {
   }
 };
 
+const createContractPaymentApi = async ({
+  contractId,
+  paySystem = 'PORTMONE',
+  amount,
+  orderId,
+  linkInvoice = 'https://www.portmone.com.ua/gateway/',
+}) => {
+  try {
+    /* 
+    contractId=17434782
+    paySystem=PORTMONE
+    orderId=PE8V883
+    amount=3649.54
+    linkInvoice=
+  */
+    const { data } = await apiInstance.post(
+      `/contractpayment/createContractPayment`,
+      null,
+      {
+        params: {
+          contractId,
+          paySystem,
+          amount,
+          orderId,
+          // linkInvoice,
+          linkInvoice: 'https://www.portmone.com.ua/gateway/',
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    throw createAxiosError(error);
+  }
+};
+
+const AMOUNT_COMMISSION = 2;
+
+const confirmContractPaymentApi = async ({
+  contractId,
+  amount,
+  paySystem = 'PORTMONE',
+  commission = AMOUNT_COMMISSION,
+  orderId,
+  payDate,
+}) => {
+  try {
+    // const commissionAmount = amount - (amount / 100) * commission;
+    const commissionAmount = Math.ceil(amount * commission) / 100;
+    const { data } = await apiInstance.post(
+      `/contractpayment/confirmContractPayment`,
+      null,
+      {
+        params: {
+          contractId,
+          paySystem,
+          amount,
+          commission: commissionAmount,
+          orderId,
+          payDate,
+        },
+        /* 
+        contractId query	integer (int64)	Идентификатор договора
+        paySystem
+        orderId query	string	Идентификатор платежа
+        payDate query	string	Дата оплаты
+        amount query	number	Сумма платежа
+        commission query	number	Комиссия
+        */
+      }
+    );
+    return data;
+  } catch (error) {
+    throw createAxiosError(error);
+  }
+};
+
 module.exports = {
   checkOrderPasswordApi,
   getOrderPasswordApi,
   updateOrderStatusApi,
+  createContractPaymentApi,
+  confirmContractPaymentApi,
 };

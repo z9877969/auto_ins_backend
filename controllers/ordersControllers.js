@@ -54,11 +54,25 @@ const updateOrderToRequestStatus = async (req, res, next) => {
 
 const updateOrderToEmmitAndRedirect = async (req, res, next) => {
   const { contractId } = req.params;
-  const { epolicy: epoliceId, vcl: vclId } = req.query;
+  const {
+    epolicy: epoliceId,
+    vcl: vclId,
+    userId,
+    salePointId,
+    orderId,
+    payDate,
+    amount,
+  } = req.query;
 
   console.log('updateOrderToEmmitAndRedirect -Start');
 
   try {
+    await api.confirmContractPaymentApi({
+      contractId,
+      amount,
+      orderId,
+      payDate,
+    });
     if (vclId) {
       console.log('update to SIGNED VCL order -Start');
       const data = await api.updateOrderStatusApi({
@@ -86,9 +100,30 @@ const updateOrderToEmmitAndRedirect = async (req, res, next) => {
     }
     console.log('epolicy response data -End ');
     console.log('updateOrderToEmmitAndRedirect -End');
-    res.redirect(EMMITED_ORDER_REDIRECT_URL);
+    res.redirect(EMMITED_ORDER_REDIRECT_URL + `?${userId}&${salePointId}`);
   } catch (error) {
-    console.log('error :>> ', error.message);
+    next(error);
+  }
+};
+
+const createContractPayment = async (req, res, next) => {
+  try {
+    // const { contractId, amount, orderId, linkInvoice } = req.query;
+    const data = await api.createContractPaymentApi(req.query);
+
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const confirmContractPayment = async (req, res, next) => {
+  try {
+    // const { contractId, amount, orderId, payDate, commission } = req.query;
+    const data = await api.confirmContractPaymentApi(req.query);
+
+    res.json(data);
+  } catch (error) {
     next(error);
   }
 };
@@ -98,4 +133,6 @@ module.exports = {
   checkOrderPassword,
   updateOrderToRequestStatus,
   updateOrderToEmmitAndRedirect,
+  createContractPayment,
+  confirmContractPayment,
 };
