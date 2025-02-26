@@ -56,7 +56,7 @@ const paymentRouter = createRouter({
       controller: (req, res) => {
         const { query } = req;
         const queryString = stringifyQueryString(query);
-        res.redirect(envConfigs + FRONT_PATHES.ORDER_EMMITED + queryString);
+        res.redirect(envConfigs.FRONT_URL + FRONT_PATHES.ORDER_EMMITED + queryString);
       },
     },
   ],
