@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 
 module.exports = {
   PORT: process.env.PORT,
@@ -9,4 +9,5 @@ module.exports = {
   EMMITED_ORDER_REDIRECT_URL: process.env.EMMITED_ORDER_REDIRECT_URL,
   TO_LOGS_KEY: process.env.TO_LOGS_KEY,
   FRONT_URL: process.env.FRONT_URL,
+  AMOUNT_COMMISSION: process.env.AMOUNT_COMMISSION,
 };

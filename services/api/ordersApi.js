@@ -1,3 +1,4 @@
+const { AMOUNT_COMMISSION } = require('../../envConfigs');
 const { createAxiosError } = require('../../helpers');
 const { apiInstance } = require('./apiInstance');
 
@@ -81,8 +82,6 @@ const createContractPaymentApi = async ({
   }
 };
 
-const AMOUNT_COMMISSION = 2;
-
 const confirmContractPaymentApi = async ({
   contractId,
   amount,
@@ -93,7 +92,7 @@ const confirmContractPaymentApi = async ({
 }) => {
   try {
     // const commissionAmount = amount - (amount / 100) * commission;
-    const commissionAmount = Math.ceil(amount * commission) / 100;
+    const commissionAmount = Math.ceil((amount * commission) / 100);
     const { data } = await apiInstance.post(
       `/contractpayment/confirmContractPayment`,
       null,
