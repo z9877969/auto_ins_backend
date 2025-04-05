@@ -1,68 +1,61 @@
-const { createRouter } = require("../../helpers");
-const { ordersControllers: c } = require("../../controllers");
-const { FRONT_PATHES } = require("../../constants");
-const envConfigs = require("../../envConfigs");
+const { createRouter } = require('../../helpers');
+const { ordersControllers: c } = require('../../controllers');
+const { FRONT_PATHES, ROUTES } = require('../../constants');
+const envConfigs = require('../../envConfigs');
 
 const stringifyQueryString = (query) => {
   return Object.entries(query).reduce(
     (acc, [key, value], idx) =>
-      acc + (idx === 0 ? "?" : "&") + `${key}=${value}`,
-    ""
+      acc + (idx === 0 ? '?' : '&') + `${key}=${value}`,
+    ''
   );
 };
 
-const paymentRouter = createRouter({
+const ordersRouter = createRouter({
   options: [
     {
-      route: "/:contractId",
-      method: "get",
+      route: ROUTES.ORDERS.GET_PSWRD,
+      method: 'get',
       middlewares: null,
       controller: c.getOrderPassword,
     },
     {
-      route: "/:contractId/check",
-      method: "get",
+      route: ROUTES.ORDERS.CHECK_PSWRD,
+      method: 'get',
       middlewares: null,
       controller: c.checkOrderPassword,
     },
     {
-      route: "/:contractId/request",
-      method: "post",
+      route: ROUTES.ORDERS.REQUEST,
+      method: 'post',
       middlewares: null,
       controller: c.updateOrderToRequestStatus,
     },
     {
-      route: "/:contractId/emmit",
-      method: "post",
-      middlewares: null,
-      controller: c.updateOrderToEmmitAndRedirect,
-    },
-    {
-      route: "/contractpayment/createContractPayment",
-      method: "post",
+      route: ROUTES.ORDERS.CREATE_PAYMENT,
+      method: 'post',
       middlewares: null,
       controller: c.createContractPayment,
     },
     {
-      route: "/contractpayment/confirmContractPayment",
-      method: "post",
+      route: ROUTES.ORDERS.PAYMENT_SUCCESS,
+      method: 'post',
       middlewares: null,
       controller: c.confirmContractPayment,
     },
     {
-      route: "/contractpayment/redirect",
-      method: "post",
+      route: ROUTES.ORDERS.PAYMENT_ERROR,
+      method: 'post',
       middlewares: null,
       controller: (req, res) => {
-        const { query } = req;
-        const queryString = stringifyQueryString(query);
-        res.redirect(envConfigs.FRONT_URL + FRONT_PATHES.ORDER_EMMITED + queryString);
+        console.log('PAYMENT ERROR');
+        res.redirect(envConfigs.FRONT_URL + '?error=true');
       },
     },
   ],
   defaultMiddlewares: [],
 });
 
-paymentRouter.setRouter();
+ordersRouter.setRouter();
 
-module.exports = paymentRouter.router;
+module.exports = ordersRouter.router;

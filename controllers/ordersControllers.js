@@ -1,138 +1,147 @@
 const { ordersApi: api } = require('../services');
-const { orderCheck } = require('../constants');
+const { orderCheck, FRONT_PATHES } = require('../constants');
 const { createError } = require('../helpers');
-const { EMMITED_ORDER_REDIRECT_URL } = require('../envConfigs');
+const { ctrlWrapper } = require('../decorators');
+const { default: queryString } = require('query-string');
+const envConfigs = require('../envConfigs');
 
-const getOrderPassword = async (req, res, next) => {
+const getOrderPassword = async (req, res) => {
   const { contractId } = req.params;
-  try {
-    const data = await api.getOrderPasswordApi(contractId);
-    res.json(data);
-  } catch (error) {
-    next(error);
-  }
+  const data = await api.getOrderPasswordApi(contractId);
+  res.json(data);
 };
 
-const checkOrderPassword = async (req, res, next) => {
+const checkOrderPassword = async (req, res) => {
   const { contractId } = req.params;
   const { password } = req.query;
 
-  try {
-    const data = await api.checkOrderPasswordApi({
-      contractId,
-      customer: password,
-    });
-    if (data !== orderCheck.status.OK) {
-      throw createError(400, 'Epolicy order check status is failed');
-    }
-    res.json(data);
-  } catch (error) {
-    next(error);
+  const data = await api.checkOrderPasswordApi({
+    contractId,
+    customer: password,
+  });
+  if (data !== orderCheck.status.OK) {
+    throw createError(400, 'Epolicy order check status is failed');
   }
+  res.json(data);
 };
 
-const updateOrderToRequestStatus = async (req, res, next) => {
+const updateOrderToRequestStatus = async (req, res) => {
   const { contractId } = req.params;
   const { epolicy: epolicyId, vcl: vclId } = req.query;
 
-  try {
+  await api.updateOrderStatusApi({
+    contractId: epolicyId,
+    state: orderCheck.state.REQUEST,
+  });
+  if (vclId) {
     await api.updateOrderStatusApi({
-      contractId: epolicyId,
+      contractId: vclId,
       state: orderCheck.state.REQUEST,
     });
-    if (vclId) {
-      await api.updateOrderStatusApi({
-        contractId: vclId,
-        state: orderCheck.state.REQUEST,
-      });
-    }
-    res.json({ contractId });
-  } catch (error) {
-    next(error);
   }
+  res.json({ contractId });
 };
 
-const updateOrderToEmmitAndRedirect = async (req, res, next) => {
-  const { contractId } = req.params;
-  const {
-    epolicy: epoliceId,
-    vcl: vclId,
-    userId,
-    salePointId,
+const createContractPayment = async (req, res) => {
+  /* 
+  req.query -> {
+    contractId: 17470615,
+    orderId: WEMCUD3,
+    amount: 265.00,
+    shoperEmail: 'b@mail.com'
+  }
+  */
+  const { amount, orderId, shoperEmail, contractId } = req.query;
+  const linkPayment = await api.createPaymentLinkApi({
+    billAmount: amount,
+    shoperEmail,
     orderId,
-    payDate,
+    contractId,
+  });
+  await api.createContractPaymentApi({
+    ...req.query,
+    linkInvoice: linkPayment,
+  });
+
+  res.json({
+    linkPayment,
     amount,
-  } = req.query;
-
-  console.log('updateOrderToEmmitAndRedirect -Start');
-
-  try {
-    await api.confirmContractPaymentApi({
-      contractId,
-      amount,
-      orderId,
-      payDate,
-    });
-    if (vclId) {
-      console.log('update to SIGNED VCL order -Start');
-      const data = await api.updateOrderStatusApi({
-        contractId: vclId,
-        state: orderCheck.state.SIGNED,
-      });
-      console.log('vcl response data :>> ', data);
-      if (data.id.toString() !== vclId.toString()) {
-        throw createError(400, 'Поліс ДЦВ не укладено');
-      }
-      console.log('update to SIGNED VCL order -Start');
-    }
-
-    const data = await api.updateOrderStatusApi({
-      contractId: contractId || epoliceId,
-      state: orderCheck.state.EMITTED,
-    });
-    console.log('epolicy response data :>> ', data);
-
-    if (
-      data.id.toString() !== contractId.toString() &&
-      data.id.toString() !== epoliceId.toString()
-    ) {
-      throw createError(400, 'Поліс еОСЦПВ не укладено');
-    }
-    console.log('epolicy response data -End ');
-    console.log('updateOrderToEmmitAndRedirect -End');
-    res.redirect(EMMITED_ORDER_REDIRECT_URL + `?${userId}&${salePointId}`);
-  } catch (error) {
-    next(error);
-  }
+    orderId,
+  });
 };
 
-const createContractPayment = async (req, res, next) => {
-  try {
-    // const { contractId, amount, orderId, linkInvoice } = req.query;
-    const data = await api.createContractPaymentApi(req.query);
+const confirmContractPayment = async (req, res) => {
+  // req.query -> { contractId, amount, orderId }
+  const { orderId, contractId } = req.query;
 
-    res.json(data);
-  } catch (error) {
-    next(error);
-  }
-};
+  const { payDate, commission } = await api.checkPaymentApi({ orderId });
 
-const confirmContractPayment = async (req, res, next) => {
-  try {
-    // const { contractId, amount, orderId, payDate, commission } = req.query;
-    const data = await api.confirmContractPaymentApi(req.query);
+  /* 
+    confirmContractPaymentApi props:
+      contractId=17470615
+      orderId=WEMCUD3
+      amount=265.00
+      payDate=2025-01-07T12:15:56
+      commission=3.45
+  */
+  await api.confirmContractPaymentApi({
+    ...req.query,
+    commission,
+    payDate,
+  });
 
-    res.json(data);
-  } catch (error) {
-    next(error);
-  }
+  const query = queryString.stringify({ orderId, contractId });
+
+  res.redirect(envConfigs.FRONT_URL + FRONT_PATHES.ORDER_EMMITED + '?' + query);
 };
 
 module.exports = {
-  getOrderPassword,
-  checkOrderPassword,
-  updateOrderToRequestStatus,
-  updateOrderToEmmitAndRedirect,
-  createContractPayment,
-  confirmContractPayment,
+  getOrderPassword: ctrlWrapper(getOrderPassword),
+  checkOrderPassword: ctrlWrapper(checkOrderPassword),
+  updateOrderToRequestStatus: ctrlWrapper(updateOrderToRequestStatus),
+  createContractPayment: ctrlWrapper(createContractPayment),
+  confirmContractPayment: ctrlWrapper(confirmContractPayment),
 };
+
+// const updateOrderToEmmitAndRedirect = async (req, res) => {
+//   const { contractId } = req.params;
+//   const {
+//     epolicy: epoliceId,
+//     vcl: vclId,
+//     userId,
+//     salePointId,
+//     orderId,
+//     payDate,
+//     amount,
+//   } = req.query;
+
+//   await api.confirmContractPaymentApi({
+//     contractId,
+//     amount,
+//     orderId,
+//     payDate,
+//   });
+//   if (vclId) {
+//     const data = await api.updateOrderStatusApi({
+//       contractId: vclId,
+//       state: orderCheck.state.SIGNED,
+//     });
+
+//     if (data.id.toString() !== vclId.toString()) {
+//       throw createError(400, 'Поліс ДЦВ не укладено');
+//     }
+//   }
+
+//   const data = await api.updateOrderStatusApi({
+//     contractId: contractId || epoliceId,
+//     state: orderCheck.state.EMITTED,
+//   });
+
+//   if (
+//     data.id.toString() !== contractId.toString() &&
+//     data.id.toString() !== epoliceId.toString()
+//   ) {
+//     throw createError(400, 'Поліс еОСЦПВ не укладено');
+//   }
+//   res.redirect(EMMITED_ORDER_REDIRECT_URL + `?${userId}&${salePointId}`);
+// };

@@ -1,6 +1,13 @@
-const { AMOUNT_COMMISSION } = require('../../envConfigs');
-const { createAxiosError } = require('../../helpers');
+const { default: queryString } = require('query-string');
+const { PM, ROUTES } = require('../../constants');
+const envConfigs = require('../../envConfigs');
+const {
+  createAxiosError,
+  getExpTime,
+  createPaymentSignature,
+} = require('../../helpers');
 const { apiInstance } = require('./apiInstance');
+const { portmoneInstance: pmApi } = require('./portmoneInstance');
 
 const getOrderPasswordApi = async (contractId) => {
   try {
@@ -71,8 +78,7 @@ const createContractPaymentApi = async ({
           paySystem,
           amount,
           orderId,
-          // linkInvoice,
-          linkInvoice: 'https://www.portmone.com.ua/gateway/',
+          linkInvoice,
         },
       }
     );
@@ -86,13 +92,11 @@ const confirmContractPaymentApi = async ({
   contractId,
   amount,
   paySystem = 'PORTMONE',
-  commission = AMOUNT_COMMISSION,
+  commission,
   orderId,
   payDate,
 }) => {
   try {
-    // const commissionAmount = amount - (amount / 100) * commission;
-    const commissionAmount = Math.ceil((amount * commission) / 100);
     const { data } = await apiInstance.post(
       `/contractpayment/confirmContractPayment`,
       null,
@@ -101,7 +105,7 @@ const confirmContractPaymentApi = async ({
           contractId,
           paySystem,
           amount,
-          commission: commissionAmount,
+          commission,
           orderId,
           payDate,
         },
@@ -121,10 +125,117 @@ const confirmContractPaymentApi = async ({
   }
 };
 
+const createPaymentLinkApi = async ({
+  billAmount,
+  shoperEmail,
+  orderId,
+  contractId,
+}) => {
+  const { dt, signature } = createPaymentSignature({
+    billAmount,
+    shopOrderNumber: orderId,
+  });
+
+  const query = queryString.stringify({
+    amount: billAmount,
+    orderId,
+    contractId,
+  });
+
+  const { data } = await pmApi.post('/gateway/', {
+    method: 'createLinkPayment',
+    payee: {
+      payeeId: envConfigs.PORTMONE_PAYEE_ID,
+      login: envConfigs.PORTMONE_LOGIN,
+      dt,
+      signature,
+    },
+    order: {
+      shopOrderNumber: orderId,
+      billAmount: billAmount,
+      preauthFlag: 'N',
+      billCurrency: PM.UAH,
+      successUrl:
+        envConfigs.BACK_URL +
+        '/orders' +
+        ROUTES.ORDERS.PAYMENT_SUCCESS +
+        '?' +
+        query,
+      failureUrl: envConfigs.BACK_URL + ROUTES.ORDERS.PAYMENT_ERROR,
+      // expTime: getExpTime(),
+    },
+    paymentTypes: {
+      card: 'Y',
+      portmone: 'Y',
+      privat: 'Y',
+      gpay: 'Y',
+      token: 'N',
+      clicktopay: 'N',
+      createtokenonly: 'N',
+    },
+    priorityPaymentTypes: {
+      gpay: '1',
+      privat: '2',
+      card: '3',
+      portmone: '4',
+      token: '0',
+      clicktopay: '0',
+      createtokenonly: '0',
+    },
+    token: {
+      tokenFlag: 'N',
+      returnToken: 'N',
+      token: '',
+      cardMask: '',
+      otherPaymentMethods: 'Y',
+      sellerToken: '',
+    },
+    payer: {
+      lang: PM.LANG_UA,
+      emailAddress: shoperEmail,
+    },
+  });
+
+  if (data.error) {
+    throw new Error(data.error.message);
+  } else {
+    return data.linkPayment;
+  }
+};
+
+const checkPaymentApi = async ({ orderId }) => {
+  const { data } = await pmApi.post('/gateway/', {
+    method: 'result',
+    params: {
+      data: {
+        login: envConfigs.PORTMONE_LOGIN,
+        password: envConfigs.PORTMONE_PSW,
+        payeeId: envConfigs.PORTMONE_PAYEE_ID,
+        shopOrderNumber: orderId,
+      },
+    },
+    id: '1',
+  });
+
+  const payDate = data[0]?.pay_date.split(' ').reduce((acc, el, i) => {
+    if (i === 0) {
+      return acc + el.split('.').reverse().join('-');
+    }
+    return acc + 'T' + el;
+  }, '');
+
+  return {
+    payDate,
+    commission: data[0]?.payee_commission,
+  };
+};
+
 module.exports = {
   checkOrderPasswordApi,
   getOrderPasswordApi,
   updateOrderStatusApi,
   createContractPaymentApi,
   confirmContractPaymentApi,
+  createPaymentLinkApi,
+  checkPaymentApi,
 };
