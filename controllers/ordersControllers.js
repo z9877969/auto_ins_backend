@@ -2,7 +2,7 @@ const { ordersApi: api } = require('../services');
 const { orderCheck, FRONT_PATHES } = require('../constants');
 const { createError } = require('../helpers');
 const { ctrlWrapper } = require('../decorators');
-const { default: queryString } = require('query-string');
+const { queryString } = require('../helpers');
 const envConfigs = require('../envConfigs');
 
 const getOrderPassword = async (req, res) => {

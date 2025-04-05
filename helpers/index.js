@@ -6,3 +6,4 @@ module.exports.convertTime = require('./convertTime');
 module.exports.getExpTime = require('./getExpTime');
 module.exports.createPaymentSignature = require('./createPaymentSignature');
 module.exports.transformReqToCurl = require('./transformReqToCurl');
+module.exports.queryString = require('./queryString');

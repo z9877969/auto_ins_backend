@@ -1,4 +1,4 @@
-const { default: queryString } = require('query-string');
+const { queryString } = require('../../helpers');
 const { PM, ROUTES } = require('../../constants');
 const envConfigs = require('../../envConfigs');
 const {
@@ -162,7 +162,7 @@ const createPaymentLinkApi = async ({
         '?' +
         query,
       failureUrl: envConfigs.BACK_URL + ROUTES.ORDERS.PAYMENT_ERROR,
-      // expTime: getExpTime(),
+      expTime: getExpTime(),
     },
     paymentTypes: {
       card: 'Y',

@@ -3,14 +3,6 @@ const { ordersControllers: c } = require('../../controllers');
 const { FRONT_PATHES, ROUTES } = require('../../constants');
 const envConfigs = require('../../envConfigs');
 
-const stringifyQueryString = (query) => {
-  return Object.entries(query).reduce(
-    (acc, [key, value], idx) =>
-      acc + (idx === 0 ? '?' : '&') + `${key}=${value}`,
-    ''
-  );
-};
-
 const ordersRouter = createRouter({
   options: [
     {
