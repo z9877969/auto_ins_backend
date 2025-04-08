@@ -30,6 +30,12 @@ const ordersRouter = createRouter({
       controller: c.createContractPayment,
     },
     {
+      route: ROUTES.ORDERS.VCL_REDIRECT,
+      method: 'post',
+      middlewares: null,
+      controller: c.redirectVcl,
+    },
+    {
       route: ROUTES.ORDERS.PAYMENT_SUCCESS,
       method: 'post',
       middlewares: null,

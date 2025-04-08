@@ -6,6 +6,7 @@ module.exports = {
     CREATE_PAYMENT: '/contractpayment/createContractPayment',
     CREATE_PAYMENT_LINK: '/payment/link',
     PAYMENT_SUCCESS: '/contractpayment/success',
+    VCL_REDIRECT: '/vcl/redirect',
     PAYMENT_ERROR: '/contractpayment/error',
     CONFIRM_PAYMENT: '/contractpayment/confirmContractPayment',
   },

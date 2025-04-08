@@ -1,9 +1,13 @@
 const { ordersApi: api } = require('../services');
-const { orderCheck, FRONT_PATHES } = require('../constants');
+const { orderCheck, FRONT_PATHES, ROUTES } = require('../constants');
 const { createError } = require('../helpers');
 const { ctrlWrapper } = require('../decorators');
 const { queryString } = require('../helpers');
 const envConfigs = require('../envConfigs');
+
+const getServerRedirectedLink = ({ query, path }) => {
+  return envConfigs.BACK_URL + '/orders' + path + '?' + query;
+};
 
 const getOrderPassword = async (req, res) => {
   const { contractId } = req.params;
@@ -45,36 +49,97 @@ const updateOrderToRequestStatus = async (req, res) => {
 const createContractPayment = async (req, res) => {
   /* 
   req.query -> {
-    contractId: 17470615,
-    orderId: WEMCUD3,
-    amount: 265.00,
+    epolicyContractId: 17470615,
+    vclContractId: 17470616,
+    epolicyOrderId: CDAZLD5
+    vclOrderId: WEMCUD3,
+    epolicyAmount: 265.00,
+    vclAmount: 265.00,
     shoperEmail: 'b@mail.com'
   }
   */
-  const { amount, orderId, shoperEmail, contractId } = req.query;
-  const linkPayment = await api.createPaymentLinkApi({
-    billAmount: amount,
+  const {
+    epolicyAmount,
+    vclAmount,
+    epolicyOrderId,
+    vclOrderId,
+    epolicyContractId,
+    vclContractId,
     shoperEmail,
-    orderId,
-    contractId,
+  } = req.query;
+
+  const query = queryString.stringify({
+    epolicyOrderId,
+    ...(vclOrderId && { vclOrderId }),
+    epolicyContractId,
+    ...(vclContractId && { vclContractId }),
+    epolicyAmount,
+    ...(vclAmount && { vclAmount }),
   });
+
+  const successUrl = getServerRedirectedLink({
+    query,
+    path: ROUTES.ORDERS.PAYMENT_SUCCESS,
+  });
+
+  const epolicyLink = await api.createPaymentLinkApi({
+    billAmount: epolicyAmount,
+    orderId: epolicyOrderId,
+    shoperEmail,
+    successUrl,
+    description: 'Оплата основної пропозиції',
+  });
+
+  let vclLink = '';
+
+  if (vclContractId && vclOrderId) {
+    const successUrl = getServerRedirectedLink({
+      query: queryString.stringify({ paymentLink: epolicyLink }),
+      path: ROUTES.ORDERS.VCL_REDIRECT,
+    });
+    vclLink = await api.createPaymentLinkApi({
+      billAmount: vclAmount,
+      orderId: vclOrderId,
+      shoperEmail,
+      successUrl,
+      description: 'Оплата додаткової пропозиції',
+    });
+
+    await api.createContractPaymentApi({
+      contractId: vclContractId,
+      amount: vclAmount,
+      orderId: vclOrderId,
+      linkInvoice: vclLink,
+    });
+  }
+
   await api.createContractPaymentApi({
-    ...req.query,
-    linkInvoice: linkPayment,
+    contractId: epolicyContractId,
+    amount: epolicyAmount,
+    orderId: epolicyOrderId,
+    linkInvoice: epolicyLink,
   });
 
   res.json({
-    linkPayment,
-    amount,
-    orderId,
+    linkPayment: vclLink ? vclLink : epolicyLink,
   });
 };
 
-const confirmContractPayment = async (req, res) => {
-  // req.query -> { contractId, amount, orderId }
-  const { orderId, contractId } = req.query;
+const redirectVcl = (req, res) => {
+  const { paymentLink } = req.query;
 
-  const { payDate, commission } = await api.checkPaymentApi({ orderId });
+  res.redirect(paymentLink);
+};
+
+const confirmContractPayment = async (req, res) => {
+  const {
+    epolicyOrderId,
+    vclOrderId,
+    epolicyContractId,
+    vclContractId,
+    epolicyAmount,
+    vclAmount,
+  } = req.query;
 
   /* 
     confirmContractPaymentApi props:
@@ -84,13 +149,34 @@ const confirmContractPayment = async (req, res) => {
       payDate=2025-01-07T12:15:56
       commission=3.45
   */
+  if (vclOrderId && vclAmount) {
+    const { payDate: vclPayDate, commission: vclComission } =
+      await api.checkPaymentApi({ orderId: vclOrderId });
+
+    await api.confirmContractPaymentApi({
+      contractId: vclContractId,
+      orderId: vclOrderId,
+      amount: vclAmount,
+      commission: vclComission,
+      payDate: vclPayDate,
+    });
+  }
+
+  const { payDate: epolicyPayDate, commission: epolicyComission } =
+    await api.checkPaymentApi({ orderId: epolicyOrderId });
+
   await api.confirmContractPaymentApi({
-    ...req.query,
-    commission,
-    payDate,
+    contractId: epolicyContractId,
+    orderId: epolicyOrderId,
+    amount: epolicyAmount,
+    commission: epolicyComission,
+    payDate: epolicyPayDate,
   });
 
-  const query = queryString.stringify({ orderId, contractId });
+  const query = queryString.stringify({
+    orderId: epolicyOrderId,
+    contractId: epolicyContractId,
+  });
 
   res.redirect(envConfigs.FRONT_URL + FRONT_PATHES.ORDER_EMMITED + '?' + query);
 };
@@ -101,47 +187,5 @@ module.exports = {
   updateOrderToRequestStatus: ctrlWrapper(updateOrderToRequestStatus),
   createContractPayment: ctrlWrapper(createContractPayment),
   confirmContractPayment: ctrlWrapper(confirmContractPayment),
+  redirectVcl: ctrlWrapper(redirectVcl),
 };
-
-// const updateOrderToEmmitAndRedirect = async (req, res) => {
-//   const { contractId } = req.params;
-//   const {
-//     epolicy: epoliceId,
-//     vcl: vclId,
-//     userId,
-//     salePointId,
-//     orderId,
-//     payDate,
-//     amount,
-//   } = req.query;
-
-//   await api.confirmContractPaymentApi({
-//     contractId,
-//     amount,
-//     orderId,
-//     payDate,
-//   });
-//   if (vclId) {
-//     const data = await api.updateOrderStatusApi({
-//       contractId: vclId,
-//       state: orderCheck.state.SIGNED,
-//     });
-
-//     if (data.id.toString() !== vclId.toString()) {
-//       throw createError(400, 'Поліс ДЦВ не укладено');
-//     }
-//   }
-
-//   const data = await api.updateOrderStatusApi({
-//     contractId: contractId || epoliceId,
-//     state: orderCheck.state.EMITTED,
-//   });
-
-//   if (
-//     data.id.toString() !== contractId.toString() &&
-//     data.id.toString() !== epoliceId.toString()
-//   ) {
-//     throw createError(400, 'Поліс еОСЦПВ не укладено');
-//   }
-//   res.redirect(EMMITED_ORDER_REDIRECT_URL + `?${userId}&${salePointId}`);
-// };

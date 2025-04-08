@@ -1,4 +1,3 @@
-const { queryString } = require('../../helpers');
 const { PM, ROUTES } = require('../../constants');
 const envConfigs = require('../../envConfigs');
 const {
@@ -129,17 +128,12 @@ const createPaymentLinkApi = async ({
   billAmount,
   shoperEmail,
   orderId,
-  contractId,
+  successUrl,
+  description,
 }) => {
   const { dt, signature } = createPaymentSignature({
     billAmount,
     shopOrderNumber: orderId,
-  });
-
-  const query = queryString.stringify({
-    amount: billAmount,
-    orderId,
-    contractId,
   });
 
   const { data } = await pmApi.post('/gateway/', {
@@ -151,16 +145,12 @@ const createPaymentLinkApi = async ({
       signature,
     },
     order: {
+      description,
       shopOrderNumber: orderId,
       billAmount: billAmount,
       preauthFlag: 'N',
       billCurrency: PM.UAH,
-      successUrl:
-        envConfigs.BACK_URL +
-        '/orders' +
-        ROUTES.ORDERS.PAYMENT_SUCCESS +
-        '?' +
-        query,
+      successUrl,
       failureUrl: envConfigs.BACK_URL + ROUTES.ORDERS.PAYMENT_ERROR,
       expTime: getExpTime(),
     },
