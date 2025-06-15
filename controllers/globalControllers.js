@@ -1,4 +1,5 @@
 const { globalApi: api } = require('../services');
+const { ipnBlackList } = require('../helpers');
 
 const createContract = async (req, res, next) => {
   try {
@@ -18,4 +19,8 @@ const getAddress = async (req, res, next) => {
   }
 };
 
-module.exports = { createContract, getAddress };
+const getBlackList = async (req, res) => {
+  res.json(ipnBlackList.IPN_BLACKLIST);
+};
+
+module.exports = { createContract, getAddress, getBlackList };
