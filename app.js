@@ -31,6 +31,7 @@ app.use('/api/automodel', automodelRouter);
 app.use('/api/global', globalRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/logs', logsRouter);
+app.use('/ping', (req, res) => {res.json('iam ok!')});
 
 app.use((_, res, __) => {
   res.status(404).json({ message: 'Not found path' });
