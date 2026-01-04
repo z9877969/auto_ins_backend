@@ -33,7 +33,7 @@ const updateOrderToRequestStatus = async (req, res) => {
   const { contractId } = req.params;
   const { epolicy: epolicyId, vcl: vclId } = req.query;
 
-  await api.updateOrderStatusApi({
+  const contractData = await api.updateOrderStatusApi({
     contractId: epolicyId,
     state: orderCheck.state.REQUEST,
   });
@@ -43,7 +43,10 @@ const updateOrderToRequestStatus = async (req, res) => {
       state: orderCheck.state.REQUEST,
     });
   }
-  res.json({ contractId });
+  if (!contractData || typeof contractData !== 'object') {
+    return res.json({ contractId });
+  }
+  res.json({ ...contractData, contractId: contractData.id });
 };
 
 const createContractPayment = async (req, res) => {
