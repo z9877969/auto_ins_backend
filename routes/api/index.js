@@ -3,3 +3,4 @@ module.exports.automodelRouter = require("./automodelRouter");
 module.exports.globalRouter = require("./globalRouter");
 module.exports.ordersRouter = require("./ordersRouter");
 module.exports.logsRouter = require("./logsRouter");
+module.exports.feedbacksRouter = require("./feedbacksRouter");
