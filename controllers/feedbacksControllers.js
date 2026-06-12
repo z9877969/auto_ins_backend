@@ -7,11 +7,8 @@ const createFeedback = async (req, res) => {
 };
 
 const getFeedbacks = async (req, res) => {
-  const page = Math.max(1, parseInt(req.query.page) || 1);
-  const limit = Math.max(1, parseInt(req.query.limit) || 6);
-
+  const { page, limit } = req.query;
   const { feedbacks, total, averageRating } = await feedbacksDb.getFeedbacks({ page, limit });
-
   res.json({ feedbacks, page, limit, total, averageRating });
 };
 

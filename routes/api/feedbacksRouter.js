@@ -1,7 +1,8 @@
 const { createRouter } = require('../../helpers');
 const { feedbacksControllers: c } = require('../../controllers');
-const { validateBody } = require('../../middlewares');
+const { validateBody, validateQuery } = require('../../middlewares');
 const feedbackSchema = require('../../schemas/feedbackSchema');
+const getFeedbacksQuerySchema = require('../../schemas/getFeedbacksQuerySchema');
 
 const feedbacksRouter = createRouter({
   options: [
@@ -14,7 +15,7 @@ const feedbacksRouter = createRouter({
     {
       route: '/',
       method: 'get',
-      middlewares: null,
+      middlewares: [validateQuery(getFeedbacksQuerySchema)],
       controller: c.getFeedbacks,
     },
   ],
