@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "nodemon server.js",
-    "start": "bash scripts/cron-setup.sh & node ./server.js",
+    "start": "node ./server.js",
     "update-schema": "node scripts/updateSchema.js"
   },
   "keywords": [],
