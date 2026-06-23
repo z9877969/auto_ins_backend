@@ -15,7 +15,7 @@ const createFeedback = async ({ name, text, rating }) => {
 const getFeedbacks = async ({ page, limit }) => {
   const offset = (page - 1) * limit;
 
-  const [[{ total, averageRating }]] = await pool.execute(
+  const [[{ total, averageRating }]] = await pool.query(
     'SELECT COUNT(*) AS total, ROUND(AVG(rating), 2) AS averageRating FROM feedbacks WHERE is_publish = 1'
   );
 
