@@ -2,7 +2,7 @@ const pool = require('./dbInstance');
 
 const createFeedback = async ({ name, text, rating }) => {
   const [result] = await pool.execute(
-    'INSERT INTO feedbacks (name, text, rating) VALUES (?, ?, ?)',
+    'INSERT INTO feedbacks (name, text, rating, is_publish) VALUES (?, ?, ?, 1)',
     [name, text, rating]
   );
   const [rows] = await pool.execute(
