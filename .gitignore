@@ -7,3 +7,5 @@ logs/
 .ipnblacklist
 CLAUDE.md
 .claude
+
+update-schema.sh
